@@ -1,0 +1,375 @@
+****************************************************************
+**                                                            **
+**         B O O S T :: S O R T :: P A R A L L E L            **
+**                                                            **
+**                   B E N C H M A R K                        **
+**                                                            **
+****************************************************************
+
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                20
+On-line CPU(s) list:   0-19
+Thread(s) per core:    1
+Core(s) per socket:    10
+Socket(s):             2
+NUMA node(s):          2
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 62
+Stepping:              4
+CPU MHz:               2499.829
+BogoMIPS:              5000.84
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              25600K
+NUMA node0 CPU(s):     0,2,4,6,8,10,12,14,16,18
+NUMA node1 CPU(s):     1,3,5,7,9,11,13,15,17,19
+
+  100000000 uint64_t elements already sorted
+=================================================
+GCC std::sort                : 2.04722 secs
+Boost sort                   : 0.079622 secs
+
+GCC std::stable_sort         : 6.31777 secs
+Boost stable sort            : 0.0797548 secs
+
+GCC parallel sort            : 0.232159 secs
+TBB parallel_sort            : 1.41808 secs
+Boost parallel sort          : 0.0798868 secs
+
+GCC parallel stable sort     : 0.701062 secs
+Boost parallel stable sort   : 0.0779235 secs
+Boost sample sort            : 0.0798308 secs
+TBB parallel stable sort     : 0.0778629 secs
+
+Boost spreadsort             : 0.0779523 secs
+
+  100000000 uint64_t elements randomly filled
+=================================================
+GCC std::sort                : 9.06821 secs
+Boost sort                   : 8.70198 secs
+
+GCC std::stable_sort         : 9.58901 secs
+Boost stable sort            : 9.32865 secs
+
+GCC parallel sort            : 0.675467 secs
+TBB parallel_sort            : 1.22453 secs
+Boost parallel sort          : 0.77721 secs
+
+GCC parallel stable sort     : 0.872894 secs
+Boost parallel stable sort   : 1.18711 secs
+Boost sample sort            : 0.774131 secs
+TBB parallel stable sort     : 1.18685 secs
+
+Boost spreadsort             : 5.68306 secs
+
+  10000000 strings randomly filled
+===============================================
+GCC std::sort                : 9.7007 secs
+Boost sort                   : 8.72219 secs
+
+GCC std::stable_sort         : 11.4743 secs
+Boost stable sort            : 8.33492 secs
+
+GCC parallel sort            : 0.914395 secs
+TBB parallel_sort            : 1.23971 secs
+Boost parallel sort          : 0.745108 secs
+
+GCC parallel stable sort     : 1.05052 secs
+Boost parallel stable sort   : 1.6953 secs
+Boost sample sort            : 0.770043 secs
+TBB parallel stable sort     : 1.69244 secs
+
+Boost spreadsort             : 3.65399 secs
+
+================================================================
+=                OBJECT COMPARISON                             =
+=              ---------------------                           =
+=                                                              =
+= The objects are arrays of 64 bits numbers                    =
+= They are compared in two ways :                              =
+=    (H) Heavy : The comparison is the sum of all the numbers  =
+=                of the array                                  =
+=    (L) Light : The comparison is with the first element of   =
+=                the array, as a key                           =
+=                                                              =
+================================================================
+
+
+100000000 elements of size 8 randomly filled 
+=============================================
+
+  H E A V Y   C O M P A R I S O N
+====================================
+GCC std::sort                : 9.26154 secs
+Boost sort                   : 9.37525 secs
+
+GCC std::stable_sort         : 11.9468 secs
+Boost stable sort            : 10.3619 secs
+
+GCC parallel sort            : 0.674429 secs
+TBB parallel_sort            : 1.26474 secs
+Boost parallel sort          : 0.793733 secs
+
+GCC parallel stable sort     : 0.936722 secs
+Boost parallel stable sort   : 1.24768 secs
+Boost sample sort            : 0.821556 secs
+TBB parallel stable sort     : 1.24701 secs
+
+
+  L I G H T   C O M P A R I S O N 
+=======================================
+GCC std::sort                : 9.23813 secs
+Boost sort                   : 9.17506 secs
+
+GCC std::stable_sort         : 11.921 secs
+Boost stable sort            : 10.368 secs
+
+GCC parallel sort            : 0.673133 secs
+TBB parallel_sort            : 1.21375 secs
+Boost parallel sort          : 0.787052 secs
+
+GCC parallel stable sort     : 0.964031 secs
+Boost parallel stable sort   : 1.29295 secs
+Boost sample sort            : 0.823693 secs
+TBB parallel stable sort     : 1.28803 secs
+
+
+50000000 elements of size 16 randomly filled 
+=============================================
+
+  H E A V Y   C O M P A R I S O N
+====================================
+GCC std::sort                : 5.14311 secs
+Boost sort                   : 5.06516 secs
+
+GCC std::stable_sort         : 7.0132 secs
+Boost stable sort            : 6.29402 secs
+
+GCC parallel sort            : 0.464555 secs
+TBB parallel_sort            : 0.735527 secs
+Boost parallel sort          : 0.592414 secs
+
+GCC parallel stable sort     : 0.799922 secs
+Boost parallel stable sort   : 0.884693 secs
+Boost sample sort            : 0.653272 secs
+TBB parallel stable sort     : 0.910007 secs
+
+
+  L I G H T   C O M P A R I S O N 
+=======================================
+GCC std::sort                : 4.8059 secs
+Boost sort                   : 4.82568 secs
+
+GCC std::stable_sort         : 6.48325 secs
+Boost stable sort            : 5.87985 secs
+
+GCC parallel sort            : 0.436218 secs
+TBB parallel_sort            : 0.700288 secs
+Boost parallel sort          : 0.575837 secs
+
+GCC parallel stable sort     : 0.786575 secs
+Boost parallel stable sort   : 0.823551 secs
+Boost sample sort            : 0.630261 secs
+TBB parallel stable sort     : 0.823857 secs
+
+
+25000000 elements of size 32 randomly filled 
+=============================================
+
+  H E A V Y   C O M P A R I S O N
+====================================
+GCC std::sort                : 3.20641 secs
+Boost sort                   : 3.13939 secs
+
+GCC std::stable_sort         : 4.75841 secs
+Boost stable sort            : 3.88847 secs
+
+GCC parallel sort            : 0.32376 secs
+TBB parallel_sort            : 0.526083 secs
+Boost parallel sort          : 0.510657 secs
+
+GCC parallel stable sort     : 0.808785 secs
+Boost parallel stable sort   : 0.789377 secs
+Boost sample sort            : 0.53106 secs
+TBB parallel stable sort     : 0.797395 secs
+
+
+  L I G H T   C O M P A R I S O N 
+=======================================
+GCC std::sort                : 2.7491 secs
+Boost sort                   : 2.64965 secs
+
+GCC std::stable_sort         : 4.27283 secs
+Boost stable sort            : 3.2248 secs
+
+GCC parallel sort            : 0.301129 secs
+TBB parallel_sort            : 0.513475 secs
+Boost parallel sort          : 0.503048 secs
+
+GCC parallel stable sort     : 0.754429 secs
+Boost parallel stable sort   : 0.731321 secs
+Boost sample sort            : 0.516466 secs
+TBB parallel stable sort     : 0.732325 secs
+
+
+12500000 elements of size 64 randomly filled 
+=============================================
+
+  H E A V Y   C O M P A R I S O N
+====================================
+GCC std::sort                : 2.40024 secs
+Boost sort                   : 2.35871 secs
+
+GCC std::stable_sort         : 3.87407 secs
+Boost stable sort            : 3.05946 secs
+
+GCC parallel sort            : 0.281633 secs
+TBB parallel_sort            : 0.540928 secs
+Boost parallel sort          : 0.464885 secs
+
+GCC parallel stable sort     : 0.69661 secs
+Boost parallel stable sort   : 0.712366 secs
+Boost sample sort            : 0.567713 secs
+TBB parallel stable sort     : 0.712527 secs
+
+
+  L I G H T   C O M P A R I S O N 
+=======================================
+GCC std::sort                : 1.80328 secs
+Boost sort                   : 1.73361 secs
+
+GCC std::stable_sort         : 3.34342 secs
+Boost stable sort            : 2.43645 secs
+
+GCC parallel sort            : 0.264578 secs
+TBB parallel_sort            : 0.430795 secs
+Boost parallel sort          : 0.456036 secs
+
+GCC parallel stable sort     : 0.694585 secs
+Boost parallel stable sort   : 0.680326 secs
+Boost sample sort            : 0.560768 secs
+TBB parallel stable sort     : 0.687827 secs
+
+
+6250000 elements of size 128 randomly filled 
+=============================================
+
+  H E A V Y   C O M P A R I S O N
+====================================
+GCC std::sort                : 1.95797 secs
+Boost sort                   : 1.93762 secs
+
+GCC std::stable_sort         : 3.47967 secs
+Boost stable sort            : 2.48502 secs
+
+GCC parallel sort            : 0.261206 secs
+TBB parallel_sort            : 0.464667 secs
+Boost parallel sort          : 0.436622 secs
+
+GCC parallel stable sort     : 0.691321 secs
+Boost parallel stable sort   : 0.719026 secs
+Boost sample sort            : 0.516839 secs
+TBB parallel stable sort     : 0.713358 secs
+
+
+  L I G H T   C O M P A R I S O N 
+=======================================
+GCC std::sort                : 1.38372 secs
+Boost sort                   : 1.39009 secs
+
+GCC std::stable_sort         : 3.23045 secs
+Boost stable sort            : 2.03465 secs
+
+GCC parallel sort            : 0.267829 secs
+TBB parallel_sort            : 0.449838 secs
+Boost parallel sort          : 0.446219 secs
+
+GCC parallel stable sort     : 0.690075 secs
+Boost parallel stable sort   : 0.745795 secs
+Boost sample sort            : 0.504709 secs
+TBB parallel stable sort     : 0.704814 secs
+
+
+3125000 elements of size 256 randomly filled 
+=============================================
+
+  H E A V Y   C O M P A R I S O N
+====================================
+GCC std::sort                : 1.64183 secs
+Boost sort                   : 1.64396 secs
+
+GCC std::stable_sort         : 3.87996 secs
+Boost stable sort            : 2.6888 secs
+
+GCC parallel sort            : 0.267195 secs
+TBB parallel_sort            : 0.405175 secs
+Boost parallel sort          : 0.455351 secs
+
+GCC parallel stable sort     : 0.675652 secs
+Boost parallel stable sort   : 0.858861 secs
+Boost sample sort            : 0.670852 secs
+TBB parallel stable sort     : 0.864305 secs
+
+
+  L I G H T   C O M P A R I S O N 
+=======================================
+GCC std::sort                : 1.19606 secs
+Boost sort                   : 1.19042 secs
+
+GCC std::stable_sort         : 3.81624 secs
+Boost stable sort            : 2.53254 secs
+
+GCC parallel sort            : 0.25651 secs
+TBB parallel_sort            : 0.393415 secs
+Boost parallel sort          : 0.449359 secs
+
+GCC parallel stable sort     : 0.674722 secs
+Boost parallel stable sort   : 0.850776 secs
+Boost sample sort            : 0.663736 secs
+TBB parallel stable sort     : 0.851473 secs
+
+
+1562500 elements of size 512 randomly filled 
+=============================================
+
+  H E A V Y   C O M P A R I S O N
+====================================
+GCC std::sort                : 2.63699 secs
+Boost sort                   : 2.45103 secs
+
+GCC std::stable_sort         : 4.09864 secs
+Boost stable sort            : 2.86892 secs
+
+GCC parallel sort            : 0.290605 secs
+TBB parallel_sort            : 0.474233 secs
+Boost parallel sort          : 0.468791 secs
+
+GCC parallel stable sort     : 0.677372 secs
+Boost parallel stable sort   : 0.924822 secs
+Boost sample sort            : 0.643715 secs
+TBB parallel stable sort     : 1.02869 secs
+
+
+  L I G H T   C O M P A R I S O N 
+=======================================
+GCC std::sort                : 1.01507 secs
+Boost sort                   : 0.989771 secs
+
+GCC std::stable_sort         : 3.8705 secs
+Boost stable sort            : 2.27346 secs
+
+GCC parallel sort            : 0.257779 secs
+TBB parallel_sort            : 0.386235 secs
+Boost parallel sort          : 0.451563 secs
+
+GCC parallel stable sort     : 0.677632 secs
+Boost parallel stable sort   : 0.907582 secs
+Boost sample sort            : 0.632215 secs
+TBB parallel stable sort     : 0.908732 secs
+
+
