@@ -1,5 +1,5 @@
 <H1>Benchmark Boost Sort Parallel</H1>
-<H2> <a href="https://github.com/fjtapia/benchmark_sort_parallel">https://github.com/fjtapia/sort_parallel_benchmark</a> </H2>
+<H2> <a href="https://github.com/fjtapia/sort_parallel_benchmark">https://github.com/fjtapia/sort_parallel_benchmark</a> </H2>
 
 
 This library is the benchmark for to measure the speed of the [Boost Sort Parallel](https://github.com/fjtapia/sort_parallel)	 algorithms compared with the GCC Parallel algorithms , the Intel Threading Building Blocks (TBB)  algorithms and the Microsoft PPC  Libraries.
