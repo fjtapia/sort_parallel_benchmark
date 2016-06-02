@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------
-/// @file file_generator.cpp
+/// @file test_file_vector.cpp
 /// @brief
 ///
 /// @author Copyright (c) 2010 2015 Francisco José Tapia (fjtapia@gmail.com )\n
@@ -14,13 +14,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <iostream>
-#include <file_vector.hpp>
 #include <vector>
-
+#include <file_vector.hpp>
 
 using std::cout ;
 using std::endl;
-namespace bs_tools = boost::sort::parallel::tools ;
+namespace bs_util = boost::sort::parallel::detail::util ;
 
 void print_banner() ;
 
@@ -43,7 +42,7 @@ int main (int argc, char *argv[] )
         return 0 ;
     };
 
-    if ( bs_tools::generate_file (name,number) != 0)
+    if ( bs_util::generate_file (name,number) != 0)
         std::cout<<"Error in the file creation\n" ;
     return 0 ;
 };

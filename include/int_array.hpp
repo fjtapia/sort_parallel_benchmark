@@ -14,6 +14,7 @@
 #define __INT_ARRAY_HPP
 
 #include <cstdint>
+#include <iostream>
 
 template <uint32_t NN>
 struct int_array
@@ -21,10 +22,11 @@ struct int_array
 
     template <class generator >
     static int_array<NN> generate (generator &gen)
-    {   int_array<NN> result;
-        for ( uint32_t i =0 ; i < NN ; ++i)
-            result.M[i] = gen();
-        return result;
+    {
+      int_array<NN> result;
+      for ( uint32_t i =0 ; i < NN ; ++i)
+        result.M[i] = gen();
+      return result;
     };
 
     uint64_t counter ( void) const
@@ -48,4 +50,9 @@ struct L_comp
 	{return (  A1.M[0]< A2.M[0] );};
 };
 
+template <uint32_t NN>
+std::ostream & operator << ( std::ostream & out, const int_array<NN> & IA)
+{	out<<IA.counter() ;
+	return out;
+};
 #endif // end of int_array.hpp

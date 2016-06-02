@@ -10,21 +10,21 @@
 ///
 /// @remarks
 //-----------------------------------------------------------------------------
-#ifndef __BOOST_SORT_PARALLEL_ALGORITHM_INDIRECT_HPP
-#define __BOOST_SORT_PARALLEL_ALGORITHM_INDIRECT_HPP
+#ifndef __BOOST_SORT_PARALLEL_DETAIL_INDIRECT_HPP
+#define __BOOST_SORT_PARALLEL_DETAIL_INDIRECT_HPP
 
 #include <vector>
 #include <type_traits>
 #include <functional>
 #include <iterator>
-#include <boost/sort/parallel/tools/atomic.hpp>
+#include <boost/sort/parallel/detail/util/atomic.hpp>
 
 
 
 namespace boost		{
 namespace sort		{
 namespace parallel	{
-namespace algorithm	{
+namespace detail	{
 
 using std::iterator_traits ;
 //
@@ -60,16 +60,16 @@ struct less_ptr_no_null
 /// @tparam iter_t : iterator to store in the index vector
 /// @param [in] first : iterator to the first element of the range
 /// @param [in] last : iterator to the element after the last of the range
-/// @param [in/out] VP : vector where store the iterators of the index
+/// @param [in/out] v_iter : vector where store the iterators of the index
 //-----------------------------------------------------------------------------
 template <class iter_t>
-void create_index (iter_t first, iter_t last, std::vector<iter_t> &VP )
+void create_index (iter_t first, iter_t last, std::vector<iter_t> &v_iter )
 {   //----------------------------- begin -------------------------------
-    auto N1 = last-first ;
-    assert ( N1 >= 0 );
-    VP.clear() ;
-    VP.reserve ( N1);
-    for ( ; first != last ; ++first) VP.push_back( first);
+    auto nelem = last-first ;
+    assert ( nelem >= 0 );
+    v_iter.clear() ;
+    v_iter.reserve ( nelem);
+    for ( ; first != last ; ++first) v_iter.push_back( first);
 };
 //
 //-----------------------------------------------------------------------------
@@ -77,35 +77,35 @@ void create_index (iter_t first, iter_t last, std::vector<iter_t> &VP )
 /// @brief sort the elements according of the sort of the index
 /// @tparam iter_t : iterators of the index
 /// @param [in] first : iterator to the first element of the data
-/// @param [in] VP : vector sorted of the iterators
+/// @param [in] v_iter : vector sorted of the iterators
 //-----------------------------------------------------------------------------
 template <class iter_t>
-void sort_index (iter_t first, std::vector<iter_t> &VP )
+void sort_index (iter_t first, std::vector<iter_t> &v_iter )
 {   //-------------------------- begin -------------------------------------
     typedef typename iterator_traits<iter_t>::value_type       value_t ;
-    size_t Ax  = 0 , Bx =0 , Pos =0 , N = VP.size();
-    iter_t itA, itB ;
-    while ( Pos < N )
-    {   while  ( Pos < N and (size_t (VP[Pos]-first)) == Pos ) ++Pos;
-        if ( Pos == N ) return ;
-        Ax = Bx = Pos ;
-        itA = first + Ax  ;
-        value_t Aux = std::move ( *itA);
-        while ( (Bx = (size_t (VP[Ax]-first)))!= Pos  )
-        {   VP[Ax] = itA;
-            itB = first + Bx ;
-            *itA = std::move ( *itB);
-            itA = itB ;
-            Ax = Bx ;
+    size_t pos_dest  = 0 , pos_src =0 , pos_in_vector =0 , nelem = v_iter.size();
+    iter_t it_dest, it_src ;
+    while ( pos_in_vector < nelem )
+    {   while  ( pos_in_vector < nelem and (size_t (v_iter[pos_in_vector]-first)) == pos_in_vector ) ++pos_in_vector;
+        if ( pos_in_vector == nelem ) return ;
+        pos_dest = pos_src = pos_in_vector ;
+        it_dest = first + pos_dest  ;
+        value_t Aux = std::move ( *it_dest);
+        while ( (pos_src = (size_t (v_iter[pos_dest]-first)))!= pos_in_vector  )
+        {   v_iter[pos_dest] = it_dest;
+            it_src = first + pos_src ;
+            *it_dest = std::move ( *it_src);
+            it_dest = it_src ;
+            pos_dest = pos_src ;
         };
-        *itA = std::move ( Aux ) ;
-        VP[Ax] = itA ;
-        ++Pos ;
+        *it_dest = std::move ( Aux ) ;
+        v_iter[pos_dest] = it_dest ;
+        ++pos_in_vector ;
     };
 };
 //
 //****************************************************************************
-};//    End namespace algorithm
+};//    End namespace detail
 };//    End namespace parallel
 };//    End namespace sort
 };//    End namespace boost

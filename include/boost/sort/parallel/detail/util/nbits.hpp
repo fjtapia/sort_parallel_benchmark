@@ -10,15 +10,16 @@
 ///
 /// @remarks
 //-----------------------------------------------------------------------------
-#ifndef __BOOST_SORT_PARALLEL_UTIL_NBITS_HPP
-#define __BOOST_SORT_PARALLEL_UTIL_NBITS_HPP
+#ifndef __BOOST_SORT_PARALLEL_DETAIL_UTIL_NBITS_HPP
+#define __BOOST_SORT_PARALLEL_DETAIL_UTIL_NBITS_HPP
 
 #include <cstdint>
 
 namespace boost		{
 namespace sort		{
 namespace parallel	{	
-namespace tools		{
+namespace detail	{
+namespace util		{
 //
 //##########################################################################
 //                                                                        ##
@@ -26,7 +27,7 @@ namespace tools		{
 //                                                                        ##
 //##########################################################################
 //
-static constexpr const uint32_t TMSB [256] =
+static constexpr const uint32_t tmsb [256] =
 {   0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
     6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -52,36 +53,37 @@ static constexpr const uint32_t TMSB [256] =
 //##########################################################################
 //
 //---------------------------------------------------------------------------
-//  function : NBits
-/// @brief Obtain the number of bits equal or greater than N
-/// @param [in] N : Number to examine
+//  function : nbits32
+/// @brief Obtain the number of bits equal or greater than num
+/// @param [in] num : Number to examine
 /// @exception none
 /// @return Number of bits
 //---------------------------------------------------------------------------
-static inline uint32_t NBits32 ( uint32_t N) noexcept
+static inline uint32_t nbits32 ( uint32_t num) noexcept
 {   //----------------------- begin -------------------------------------
-    int Pos = (N & 0xffff0000U)?16:0 ;
-    if ((N>>Pos) & 0xff00U) Pos += 8 ;
-    return (  TMSB [ N >> Pos ] + Pos );
+    int Pos = (num & 0xffff0000U)?16:0 ;
+    if ((num>>Pos) & 0xff00U) Pos += 8 ;
+    return (  tmsb [ num >> Pos ] + Pos );
 }
 //
 //---------------------------------------------------------------------------
-//  function : NBits
-/// @brief Obtain the number of bits equal or greater than N
-/// @param [in] N : Number to examine
+//  function : nbits64
+/// @brief Obtain the number of bits equal or greater than num
+/// @param [in] num : Number to examine
 /// @exception none
 /// @return Number of bits
 //---------------------------------------------------------------------------
-static inline uint32_t NBits64 ( uint64_t N)
+static inline uint32_t nbits64 ( uint64_t num)
 {   //----------------------- begin -------------------------------------
-    uint32_t  Pos = ( N & 0xffffffff00000000ULL)?32:0 ;
-    if ( (N>>Pos) & 0xffff0000ULL ) Pos +=16  ;
-    if ( (N>>Pos) & 0xff00ULL     ) Pos += 8 ;
-    return ( TMSB [ N >> Pos ] + Pos );
+    uint32_t  Pos = ( num & 0xffffffff00000000ULL)?32:0 ;
+    if ( (num>>Pos) & 0xffff0000ULL ) Pos +=16  ;
+    if ( (num>>Pos) & 0xff00ULL     ) Pos += 8 ;
+    return ( tmsb [ num >> Pos ] + Pos );
 }
 
 //****************************************************************************
-};//    End namespace tools
+};//    End namespace util
+};//    End namespace detail
 };//    End namespace parallel
 };//    End namespace sort
 };//    End namespace boost

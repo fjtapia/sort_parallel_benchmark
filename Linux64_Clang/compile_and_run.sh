@@ -12,7 +12,7 @@ date
 echo "C O M P I L I N G . . . . . . . . . . ."
 echo "."
 clang++ -O3  -std=c++11 -stdlib=libc++ ./file_generator.cpp -march=native -w -fexceptions  -I../include -o file_generator
-clang++ -O3  -std=c++11 -stdlib=libc++ ./benchmark.cpp  -march=native -w -fexceptions  -I../include -pthread -lpthread -ltbb   -o benchmark
+clang++ -O3  -std=c++11 -stdlib=libc++ ./benchmark.cpp  -march=native -w -fexceptions  -I../../include -I../include -pthread -lpthread -ltbb   -o benchmark
 date
 echo "R U N N I N G . . . . . . . . . . ."
 echo " ( The time needed is around 5 to 20 minutes depending of your machine ). . . . . . ."

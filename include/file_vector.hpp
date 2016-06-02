@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------
 /// @file file_vector.hpp
 /// @brief This file contains functions for to work with random data and files
-///        Have functions for to create a vector with random data, and 
+///        Have functions for to create a vector with random data, and
 ///        functions for lo load a vector of numbers or strings from the file
 ///
 /// @author Copyright (c) 2015 Francisco José Tapia (fjtapia@gmail.com )\n
@@ -28,8 +28,9 @@
 
 namespace boost		{
 namespace sort		{
-namespace parallel	{	
-namespace tools		{
+namespace parallel	{
+namespace detail	{
+namespace util		{
 //
 //-----------------------------------------------------------------------------
 //  function : generate_file
@@ -241,7 +242,8 @@ struct uint64_file_generator
 };
 //
 //****************************************************************************
-}; // end namespace tools
+}; // end namespace util
+}; // end namespace detail
 }; // end namespace parallel
 }; // end namespace sort
 }; // end namespace boost

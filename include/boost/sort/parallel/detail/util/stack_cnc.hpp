@@ -1,7 +1,6 @@
 //----------------------------------------------------------------------------
 /// @file   stack_cnc.hpp
-/// @brief  This file contains the implementation of the several types of
-///         recursive fastmutex for read and write
+/// @brief  This file contains the implementation concurrent stack
 ///
 /// @author Copyright (c) 2010 2015 Francisco José Tapia (fjtapia@gmail.com )\n
 ///         Distributed under the Boost Software License, Version 1.0.\n
@@ -11,17 +10,18 @@
 ///
 /// @remarks
 //-----------------------------------------------------------------------------
-#ifndef __BOOST_SORT_PARALLEL_TOOLS_STACK_CNC_HPP
-#define __BOOST_SORT_PARALLEL_TOOLS_STACK_CNC_HPP
+#ifndef __BOOST_SORT_PARALLEL_DETAIL_UTIL_stack_cnc_t_HPP
+#define __BOOST_SORT_PARALLEL_DETAIL_UTIL_stack_cnc_t_HPP
 
-#include <boost/sort/parallel/tools/spinlock.hpp>
+#include <boost/sort/parallel/detail/util/spinlock.hpp>
 #include <vector>
 
 namespace boost		{
 namespace sort		{
-namespace parallel	{	
-namespace tools		{
-
+namespace parallel	{
+namespace detail	{
+namespace util		{
+//
 //###########################################################################
 //                                                                         ##
 //    ################################################################     ##
@@ -55,119 +55,76 @@ typedef typename vector_t::reference                        reference;
 typedef typename vector_t::const_reference                  const_reference;
 typedef typename vector_t::allocator_type                   allocator_type;
 typedef Allocator                                           alloc_t ;
-typedef spinlock  spinlock_t ;
+
 
 
 protected:
 //---------------------------------------------------------------------------
 //                   Internal variables
 //---------------------------------------------------------------------------
-vector_t     V ;
+vector_t            v_t ;
 mutable spinlock_t  spl;
 
 public :
 //
-//***************************************************************************
-//  C O N S T R U C T O R S     A N D    D E S T R U C T O R
-//
-//  explicit stack_cnc ( );
-//  explicit stack_cnc ( const alloc_t &ALLC = alloc_t ())
-//
-//  stack_cnc ( const stack_cnc & VT )
-//  stack_cnc ( stack_cnc && VT)
-//
-//  template < typename alloc_t2 =alloc_t , bool cnc2=cnc >
-//  stack_cnc (const stack_cnc<value_type,cnc2 ,alloc_t2> &VT)
-//
-//  template < bool cnc2>
-//  stack_cnc ( stack_cnc<value_type,cnc2,alloc_t> && VT)
-//
-//  virtual ~stack_cnc (void)
-//
-//***************************************************************************
-//
 //---------------------------------------------------------------------------
 //  function : stack_cnc
 /// @brief  constructor
 //---------------------------------------------------------------------------
-explicit inline stack_cnc (void ):V(){  } ;
+explicit inline stack_cnc (void ):v_t(){  } ;
 //
 //---------------------------------------------------------------------------
 //  function : stack_cnc
 /// @brief  constructor
-/// @param [in] ALLC : Allocator
+/// @param [in] allc : Allocator
 //---------------------------------------------------------------------------
-explicit inline stack_cnc ( const Allocator &ALLC ):V(ALLC){  } ;
+explicit inline stack_cnc ( const Allocator &allc ):v_t(allc){  } ;
 //
 //---------------------------------------------------------------------------
 //  function : stack_cnc
 /// @brief  Copy constructor
-/// @param [in] VT : stack_cnc from where copy the data
 //---------------------------------------------------------------------------
-stack_cnc ( const stack_cnc & VT ) = delete ;
+stack_cnc ( const stack_cnc &  ) = delete ;
 //
 //---------------------------------------------------------------------------
 //  function : stack_cnc
 /// @brief  Copy constructor
-/// @param [in] VT : stack_cnc from where copy the data
+/// @param [in] v_other : stack_cnc from where copy the data
 //---------------------------------------------------------------------------
 template <typename Allocator2>
-inline stack_cnc ( const std::vector<value_type,Allocator2> & VT ): V ( VT) { };
+stack_cnc ( const std::vector<value_type,Allocator2> & v_other ):
+            v_t (v_other) { };
 //
 //---------------------------------------------------------------------------
 //  function : stack_cnc
 /// @brief  Move constructor
-/// @param [in] VT : stack_cnc from where copy the data
 //---------------------------------------------------------------------------
-stack_cnc ( stack_cnc && VT) = delete ;
+stack_cnc ( stack_cnc && ) = delete ;
 //
 //---------------------------------------------------------------------------
 //  function : ~stack_cnc
 /// @brief  Destructor
 //---------------------------------------------------------------------------
-virtual ~stack_cnc (void) {  V.clear(); };
-//
-//***************************************************************************
-//  O P E R A T O R = , A S S I G N , C L E A R , S W A P
-//
-//  stack_cnc & operator= (const stack_cnc &VT)
-//
-//  template < typename alloc_t2 , bool cnc2>
-//  stack_cnc & operator= (const stack_cnc<value_type,cnc2, alloc_t2> &VT)
-//
-//  template <bool cnc2>
-//  stack_cnc & operator= ( stack_cnc<value_type,cnc2,alloc_t> &&A)
-//
-//  template <class InputIterator>
-//  void assign ( InputIterator it_first, InputIterator it_last )
-//
-//  void assign ( unsize_type n, const value_type& u )
-//
-//  void clear(void)
-//  void swap ( stack_cnc  & A ) noexcept
-//
-//***************************************************************************
+virtual ~stack_cnc (void) {  v_t.clear(); };
 //
 //---------------------------------------------------------------------------
 //  function : operator =
 /// @brief Asignation operator
-/// @param [in] VT : stack_cnc from where copy the data
-/// @return Reference to the stack_cnc after the copy
 //---------------------------------------------------------------------------
-stack_cnc & operator= (const stack_cnc &VT)  = delete ;
+stack_cnc & operator= (const stack_cnc &)  = delete ;
 //
 //---------------------------------------------------------------------------
 //  function : operator =
 /// @brief Asignation operator
-/// @param [in] VT : stack_cnc from where copy the data
+/// @param [in] v_other : stack_cnc from where copy the data
 /// @return Reference to the stack_cnc after the copy
 //---------------------------------------------------------------------------
 template < typename alloc_t2 >
-stack_cnc & operator= (const std::vector<value_type,alloc_t2> &VT)
+stack_cnc & operator= (const std::vector<value_type,alloc_t2> &v_other)
 {   //-------------------------- begin ------------------------------
-    if ( this == &VT ) return *this ;
-    std::lock_guard<spinlock_t>  S(spl);
-    V = VT ;
+    if ( this == &v_other ) return *this ;
+    std::lock_guard<spinlock_t>  guard(spl);
+    v_t = v_other ;
     return *this ;
 };
 //
@@ -176,8 +133,8 @@ stack_cnc & operator= (const std::vector<value_type,alloc_t2> &VT)
 /// @brief Delete all the elements of the stack_cnc.
 //---------------------------------------------------------------------------
 void clear(void)
-{   std::lock_guard<spinlock_t>  S(spl);
-    V.clear ( );
+{   std::lock_guard<spinlock_t>  guard(spl);
+    v_t.clear ( );
 };
 //
 //---------------------------------------------------------------------------
@@ -186,25 +143,12 @@ void clear(void)
 /// @param [in] A : stack_cnc to swap
 /// @return none
 //---------------------------------------------------------------------------
-void swap ( stack_cnc  & A ) noexcept
+void swap ( stack_cnc  & stack_other ) noexcept
 {   //------------------ begin ------------------
-    if ( this == &A ) return ;
-    std::lock_guard<spinlock_t>  S(spl);
-    V.swap( A.V);
+    if ( this == &stack_other ) return ;
+    std::lock_guard<spinlock_t>  guard(spl);
+    v_t.swap( stack_other.v_t);
 };
-//
-//***************************************************************************
-//  S I Z E , M A X _ S I Z E , R E S I Z E
-//  C A P A C I T Y , E M P T Y , R E S E R V E
-//
-//  size_type size        ( void  ) const noexcept
-//  size_type max_size    ( void  ) const noexcept
-//  void      resize      ( unsize_type sz,value_type c = value_type())
-//  size_type capacity    ( void  ) const noexcept
-//  bool      empty       ( void  ) const noexcept
-//  void      reserve     ( size_type n ) noexcept
-//
-//***************************************************************************
 //
 //---------------------------------------------------------------------------
 //  function : size
@@ -212,8 +156,8 @@ void swap ( stack_cnc  & A ) noexcept
 /// @return number of elements in the stack_cnc
 //---------------------------------------------------------------------------
 size_type size ( void) const noexcept
-{   std::lock_guard<spinlock_t>  S(spl);
-    return V.size() ;
+{   std::lock_guard<spinlock_t>  guard(spl);
+    return v_t.size() ;
 };
 //
 //---------------------------------------------------------------------------
@@ -222,23 +166,22 @@ size_type size ( void) const noexcept
 /// @return maximun size of the container
 //---------------------------------------------------------------------------
 size_type max_size (void) const noexcept
-{   std::lock_guard<spinlock_t>  S(spl);
-    return ( V.max_size() );
+{   std::lock_guard<spinlock_t>  guard(spl);
+    return ( v_t.max_size() );
 };
 //
 //---------------------------------------------------------------------------
 //  function : shrink_to_fit
-/// @brief resize the current vector size and change to sz.\n
-///        If sz is smaller than the current size, delete elements to end\n
-///        If sz is greater than the current size, insert elements to the
-///        end with the value c
-/// @param [in] sz : new size of the stack_cnc after the resize
-/// @param [in] c : Value to insert if sz is greather than the current size
+/// @brief Requests the removal of unused capacity.
+///        It is a non-binding request to reduce capacity() to size().
+///        It depends on the implementation if the request is fulfilled.
+///        All iterators, including the past the end iterator, are potentially
+///        invalidated.
 /// @return none
 //---------------------------------------------------------------------------
 void shrink_to_fit ( )
-{   std::lock_guard<spinlock_t>  S(spl);
-    V.shrink_to_fit();
+{   std::lock_guard<spinlock_t>  guard(spl);
+    v_t.shrink_to_fit();
 };
 //
 //---------------------------------------------------------------------------
@@ -247,8 +190,8 @@ void shrink_to_fit ( )
 /// @return maximun size of the container
 //---------------------------------------------------------------------------
 size_type capacity ( void) const noexcept
-{   std::lock_guard<spinlock_t>  S(spl);
-    return ( V.capacity() );
+{   std::lock_guard<spinlock_t>  guard(spl);
+    return ( v_t.capacity() );
 };
 //
 //---------------------------------------------------------------------------
@@ -257,8 +200,8 @@ size_type capacity ( void) const noexcept
 /// @return true if the map is empty, false in any other case
 //---------------------------------------------------------------------------
 bool empty ( void) const noexcept
-{   std::lock_guard<spinlock_t>  S(spl);
-    return (V.empty()) ;
+{   std::lock_guard<spinlock_t>  guard(spl);
+    return (v_t.empty()) ;
 };
 //
 //---------------------------------------------------------------------------
@@ -270,49 +213,33 @@ bool empty ( void) const noexcept
 ///          compatibility with the STL vector interface
 //---------------------------------------------------------------------------
 void reserve ( size_type n ) noexcept
-{   std::lock_guard<spinlock_t>  S(spl);
-    V.reserve(n);
+{   std::lock_guard<spinlock_t>  guard(spl);
+    v_t.reserve(n);
 };
 //
 //---------------------------------------------------------------------------
 //  function : copy
 /// @brief explicit copy for to prevent the automatic copy with the operator =
-/// @param [in] V : vector to copy
+/// @param [in] v_other : vector to copy
 /// @return none
 /// @remarks
 //---------------------------------------------------------------------------
 template< class Allocator2>
-void copy ( std::vector<value_type,Allocator2> & V2)
-{   std::lock_guard<spinlock_t>  S(spl);
-    V2 = V ;
+void copy ( std::vector<value_type,Allocator2> & v_other)
+{   std::lock_guard<spinlock_t>  guard(spl);
+    v_other = v_t ;
 };
 
-//***************************************************************************
-//          P U S H _ B A C K
-//
-//  template <class P >
-//  iterator push_back (  P && D )
-//
-//  template <class P ,class Function>
-//  iterator push_back_if ( P && D , Function && M )
-//
-//  template <class ... Args>
-//  iterator emplace_back ( Args && ... args )
-//
-//  template <class Function , class ... Args>
-//  iterator emplace_back_if ( Function && M , Args && ... args )
-//
-//***************************************************************************
 //---------------------------------------------------------------------------
 //  function : push_back
 /// @brief Insert one element in the back of the container
-/// @param [in] D : value to insert. Can ve a value, a reference or an rvalue
+/// @param [in] val : value to insert. Can ve a value, a reference or an rvalue
 /// @return iterator to the element inserted
 /// @remarks This operation is O ( const )
 //---------------------------------------------------------------------------
-void push_back (const value_type  & D )
-{   std::lock_guard<spinlock_t>  S(spl);
-    V.push_back(D);
+void push_back (const value_type  & val )
+{   std::lock_guard<spinlock_t>  guard(spl);
+    v_t.push_back(val);
 };
 
 //---------------------------------------------------------------------------
@@ -324,43 +251,24 @@ void push_back (const value_type  & D )
 //---------------------------------------------------------------------------
 template <class ... Args>
 void emplace_back ( Args && ... args )
-{   std::lock_guard<spinlock_t>  S(spl);
-    V.emplace_back (std::forward <Args>(args) ...);
+{   std::lock_guard<spinlock_t>  guard(spl);
+    v_t.emplace_back (std::forward <Args>(args) ...);
 };
 //---------------------------------------------------------------------------
 //  function : push_back
 /// @brief Insert one element in the back of the container
-/// @param [in] D : value to insert. Can ve a value, a reference or an rvalue
+/// @param [in] v_other : vector to insert : value to insert. Can ve a value,
+///                       a reference or an rvalue
 /// @return iterator to the element inserted
 /// @remarks This operation is O ( const )
 //---------------------------------------------------------------------------
 template <class Allocator2>
-stack_cnc & push_back ( const std::vector<value_type,Allocator2> & V1)
-{   std::lock_guard<spinlock_t>  S(spl);
-    for ( size_type i =0 ; i < V1.size() ; ++i)
-        V.push_back(V1[i]);
+stack_cnc & push_back ( const std::vector<value_type,Allocator2> & v_other)
+{   std::lock_guard<spinlock_t>  guard(spl);
+    for ( size_type i =0 ; i < v_other.size() ; ++i)  v_t.push_back(v_other[i]);
     return *this ;
 };
-//
-//***************************************************************************
-//                  P O P _ B A C K
-//
-//  void pop_back ( void)
-//
-//  template <class Function >
-//  uint32_t pop_back_if ( Function &&  M1)
-//
-//  uint32_t pop_copy_back ( value_type & V)
-//
-//  template <class Function >
-//  uint32_t pop_copy_back_if ( value_type & V, Function && M1)
-//
-//  uint32_t pop_move_back ( value_type & V)
-//
-//  template <class Function >
-//  uint32_t pop_move_back_if ( value_type & V, Function && M1)
-//
-//***************************************************************************
+
 //
 //---------------------------------------------------------------------------
 //  function :pop_back
@@ -370,12 +278,30 @@ stack_cnc & push_back ( const std::vector<value_type,Allocator2> & V1)
 /// @remarks This operation is O(constant)
 //---------------------------------------------------------------------------
 void pop_back ( void)
-{   std::lock_guard<spinlock_t>  S(spl);
-    V.pop_back() ;
+{   std::lock_guard<spinlock_t>  guard(spl);
+    v_t.pop_back() ;
 };
 //
 //---------------------------------------------------------------------------
 //  function :pop_copy_back
+/// @brief erase the last element of the tree and return a copy
+/// @param [out] val : reference to a variable where copy the element
+/// @return code of the operation
+///         0- Element erased
+///         1 - Empty tree
+/// @remarks This operation is O(1)
+//---------------------------------------------------------------------------
+bool pop_copy_back ( value_type & val)
+{   //-------------------------- begin -----------------------------
+    std::lock_guard<spinlock_t>  guard(spl);
+    if ( v_t.size() == 0) return false ;
+    val = v_t.back() ;
+    v_t.pop_back() ;
+    return true;
+};
+//
+//---------------------------------------------------------------------------
+//  function :pop_move_back
 /// @brief erase the last element of the tree and return a copy
 /// @param [out] V : reference to a variable where copy the element
 /// @return code of the operation
@@ -383,17 +309,17 @@ void pop_back ( void)
 ///         1 - Empty tree
 /// @remarks This operation is O(1)
 //---------------------------------------------------------------------------
-bool pop_copy_back ( value_type & P)
+bool pop_move_back ( value_type & P)
 {   //-------------------------- begin -----------------------------
     std::lock_guard<spinlock_t>  S(spl);
-    if ( V.size() == 0) return false ;
-    P = V.back() ;
-    V.pop_back() ;
+    if ( v_t.size() == 0) return false ;
+    P = std::move ( v_t.back()) ;
+    v_t.pop_back() ;
     return true;
 };
 //
 //---------------------------------------------------------------------------
-//  function :pop_copy_back
+//  function :pop_move_back
 /// @brief erase the last NElem element of the stack, if possible, and push
 ///        back a copy in the vector V1
 /// @param [in/out] V1 : vector where copy the elements extracted
@@ -401,25 +327,49 @@ bool pop_copy_back ( value_type & P)
 /// @return Number of elements extracted ( 0- Indicates that V is empty)
 //---------------------------------------------------------------------------
 template <class Allocator2>
-size_type pop_copy_back ( std::vector<value_type,Allocator2> & V1,
-                          size_type NElem )
+size_type pop_move_back ( std::vector<value_type,Allocator2> & v1,
+                          size_type nelem )
 {   //-------------------------- begin -----------------------------
-    std::lock_guard<spinlock_t>  S(spl);
-    size_type Aux = 0 ;
-    if ( V.size() != 0 )
-    {   Aux = ( V.size() < NElem )? V.size() :NElem ;
-        size_type PosIni = V.size() - Aux ;
-        for ( size_type i = PosIni ; i < V.size() ; ++i)
-            V1.push_back ( V [i]);
-        V.erase( V.begin() + PosIni , V.end() );
+    std::lock_guard<spinlock_t>  s(spl);
+    size_type aux = 0 ;
+    if ( v_t.size() != 0 )
+    {   aux = ( v_t.size() < nelem )? v_t.size() :nelem ;
+        size_type pos_ini = v_t.size() - aux ;
+        for ( size_type i = pos_ini ; i < v_t.size() ; ++i)
+            v1.push_back ( std::move (v_t [i]));
+        v_t.erase( v_t.begin() + pos_ini , v_t.end() );
     }
-    return Aux;
+    return aux;
+};
+//
+//---------------------------------------------------------------------------
+//  function :pop_copy_back
+/// @brief erase the last nelem element of the stack, if possible, and push
+///        back a copy in the vector v_out
+/// @param [in/out] v_out : vector where copy the elements extracted
+/// @param [in] nelem : number of elements to extract, if possible
+/// @return Number of elements extracted ( 0- Indicates that v_t is empty)
+//---------------------------------------------------------------------------
+template <class Allocator2>
+size_type pop_copy_back ( std::vector<value_type,Allocator2> & v_out,
+                          size_type nelem )
+{   //-------------------------- begin -----------------------------
+    std::lock_guard<spinlock_t>  guard(spl);
+    size_type aux = 0 ;
+    if ( v_t.size() != 0 )
+    {   aux = ( v_t.size() < nelem )? v_t.size() :nelem ;
+        size_type pos_ini = v_t.size() - aux ;
+        for ( size_type i=pos_ini ;i< v_t.size();++i) v_out.push_back(v_t[i]);
+        v_t.erase( v_t.begin() + pos_ini , v_t.end() );
+    }
+    return aux;
 };
 
 }; // end class stack_cnc
 
 //***************************************************************************
-};// end namespace tools
+};// end namespace util
+};// end namespace detail
 };// end namespace parallel
 };// end namespace sort
 };// end namespace boost

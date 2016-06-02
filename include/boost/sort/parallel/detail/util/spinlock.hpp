@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------
-/// @file spinlock.hpp
+/// @file spinlock_t.hpp
 /// @brief
 ///
 /// @author Copyright (c) 2010 2015 Francisco José Tapia (fjtapia@gmail.com )\n
@@ -10,8 +10,8 @@
 ///
 /// @remarks
 //-----------------------------------------------------------------------------
-#ifndef __BOOST_SORT_PARALLEL_TOOLS_SPINLOCK_HPP
-#define __BOOST_SORT_PARALLEL_TOOLS_SPINLOCK_HPP
+#ifndef __BOOST_SORT_PARALLEL_DETAIL_UTIL_SPINLOCK_HPP
+#define __BOOST_SORT_PARALLEL_DETAIL_UTIL_SPINLOCK_HPP
 
 
 #include <atomic>
@@ -24,7 +24,8 @@
 namespace boost		{
 namespace sort		{
 namespace parallel	{	
-namespace tools		{
+namespace detail	{
+namespace util		{
 
 //##########################################################################
 //                                                                        ##
@@ -32,11 +33,11 @@ namespace tools		{
 //                                                                        ##
 //##########################################################################
 //---------------------------------------------------------------------------
-/// @class spinlock
+/// @class spinlock_t
 ///
 /// @remarks This class meet the BasicLockable requirements ( lock, unlock )
 //---------------------------------------------------------------------------
-class spinlock
+class spinlock_t
 {
 private:
 //***************************************************************************
@@ -47,38 +48,30 @@ std::atomic_flag af ;
 public :
 //
 //---------------------------------------------------------------------------
-//  function : spinlock
+//  function : spinlock_t
 /// @brief  class constructor
 /// @param [in]
 //---------------------------------------------------------------------------
-explicit inline spinlock() noexcept{ af.clear(); };
+explicit inline spinlock_t() noexcept{ af.clear(); };
 //
 //---------------------------------------------------------------------------
 //  function : lock
-/// @brief  Lock the spinlock
+/// @brief  Lock the spinlock_t
 //---------------------------------------------------------------------------
 inline void lock() noexcept
 {   if ( af.test_and_set(std::memory_order_acquire))
-    {   while ( wait() and  af.test_and_set(std::memory_order_relaxed) );
+    {	std::this_thread::yield() ;
+		while (af.test_and_set(std::memory_order_relaxed))
+		{	std::this_thread::yield();
+		};
     };
 };
 //
 //---------------------------------------------------------------------------
-//  function : wait
-/// @brief
-/// @param [in]
-/// @return true :locked false: not previous locked
-//---------------------------------------------------------------------------
-inline bool wait () const noexcept
-{   std::this_thread::yield();
-    return true ;
-} ;
-//
-//---------------------------------------------------------------------------
 //  function : try_lock
-/// @brief Try to lock the spinlock, if not, return false
-/// @param [in]
-/// @return true :locked false: not previous locked
+/// @brief Try to lock the spinlock_t, if not, return false
+/// @return true : locked
+///         false: not previous locked
 //---------------------------------------------------------------------------
 inline bool try_lock() noexcept
 {   return not af.test_and_set(std::memory_order_acquire);
@@ -86,7 +79,7 @@ inline bool try_lock() noexcept
 //
 //---------------------------------------------------------------------------
 //  function : unlock
-/// @brief  unlock the spinlock
+/// @brief  unlock the spinlock_t
 //---------------------------------------------------------------------------
 inline void unlock() noexcept
 {   //----------------------- begin -----------------
@@ -98,7 +91,8 @@ inline void unlock() noexcept
 //***************************************************************************
 //
 //***************************************************************************
-};      // end namespace tools
+};      // end namespace util
+};      // end namespace detail
 };      // end namespace parallel
 };      // end namespace sort
 };      // end namespace boost

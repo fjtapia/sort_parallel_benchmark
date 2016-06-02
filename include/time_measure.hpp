@@ -18,8 +18,9 @@
 
 namespace boost		{
 namespace sort		{
-namespace parallel	{	
-namespace tools		{
+namespace parallel	{
+namespace detail	{
+namespace util		{
 
 namespace chrn = std::chrono ;
 //
@@ -52,7 +53,8 @@ double subtract_time  ( const time_point & t1 , const time_point &t2)
 };
 
 //***************************************************************************
-};//    End namespace tools
+};//    End namespace util
+};//    End namespace detail
 };//    End namespace parallel
 };//    End namespace sort
 };//    End namespace boost

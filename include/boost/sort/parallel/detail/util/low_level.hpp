@@ -10,8 +10,8 @@
 ///
 /// @remarks
 //-----------------------------------------------------------------------------
-#ifndef __BOOST_SORT_PARALLEL_UTIL_LOW_LEVEL_HPP
-#define __BOOST_SORT_PARALLEL_UTIL_LOW_LEVEL_HPP
+#ifndef __BOOST_SORT_PARALLEL_DETAIL_UTIL_LOW_LEVEL_HPP
+#define __BOOST_SORT_PARALLEL_DETAIL_UTIL_LOW_LEVEL_HPP
 
 #include <functional>
 #include <memory>
@@ -23,33 +23,34 @@
 namespace boost		{
 namespace sort		{
 namespace parallel	{
+namespace detail    {
 namespace util		{
-namespace lwl		{
+//namespace lwl		{
 
 using std::iterator_traits;
 
 //
 //-----------------------------------------------------------------------------
 //  function : construct_object
-/// @brief create an object in the memory specified by Ptr
+/// @brief create an object in the memory specified by ptr
 /// @tparam value_t : class of the object to create
 /// @tparam Args : parameters for the constructor
-/// @param [in] Ptr : pointer to the memory where to create the object
+/// @param [in] ptr : pointer to the memory where to create the object
 /// @param [in] args : arguments to the constructor
 //-----------------------------------------------------------------------------
-template <class value_t ,class ... Args>
-inline void construct_object ( value_t *Ptr, Args && ... args)
-{   (::new (static_cast<void*> (Ptr)) value_t (std::forward<Args> ( args)...));
+template <class Value_t ,class ... Args>
+inline void construct_object ( Value_t *ptr, Args && ... args)
+{   (::new (static_cast<void*> (ptr)) Value_t (std::forward<Args> ( args)...));
 };
 //
 //-----------------------------------------------------------------------------
 //  function : destroy_object
-/// @brief destroy an object in the memory specified by Ptr
-/// @tparam value_t : class of the object to create
-/// @param [in] Ptr : pointer to the object to destroy
+/// @brief destroy an object in the memory specified by ptr
+/// @tparam Value_t : class of the object to create
+/// @param [in] ptr : pointer to the object to destroy
 //-----------------------------------------------------------------------------
-template <class value_t >
-inline void destroy_object ( value_t *Ptr){   Ptr->~value_t () ;};
+template <class Value_t >
+inline void destroy_object ( Value_t *ptr){   ptr->~Value_t () ;};
 
 //
 //-----------------------------------------------------------------------------
@@ -60,13 +61,13 @@ inline void destroy_object ( value_t *Ptr){   Ptr->~value_t () ;};
 /// @param [in] val : object used for the initialization
 /// @return range initialized
 //-----------------------------------------------------------------------------
-template <class iter_t >
-inline void init ( iter_t  first , iter_t  last ,
-				   typename iterator_traits< iter_t>::value_type & val)
+template <class Iter_t >
+inline void init ( Iter_t  first , Iter_t  last ,
+				   typename iterator_traits< Iter_t>::value_type & val)
 {   //----------------- begin ---------------------------
 	if ( first == last  ) return  ;
 	construct_object ( &(*first), std::move ( val) );
-	iter_t it1 = first, it2 = first+1 ;
+	Iter_t it1 = first, it2 = first+1 ;
 	while ( it2 != last)
 		construct_object (&(*( it2++)), std::move ( * (it1++)));
 	val = std::move ( * (last -1));
@@ -74,30 +75,28 @@ inline void init ( iter_t  first , iter_t  last ,
 //
 //-----------------------------------------------------------------------------
 //  function : construct
-/// @brief create an object in the memory specified by Ptr
-/// @tparam value_t : class of the object to create
+/// @brief create an object in the memory specified by ptr
+/// @tparam Value_t : class of the object to create
 /// @tparam Args : parameters for the constructor
-/// @param [in] Ptr : pointer to the memory where to create the object
+/// @param [in] ptr : pointer to the memory where to create the object
 /// @param [in] args : arguments to the constructor
 //-----------------------------------------------------------------------------
-template <class value_t ,class ... Args>
-inline void construct ( value_t *Ptr, Args && ... args)
-{   (::new (static_cast<void*> (Ptr)) value_t (std::forward<Args> ( args)...));
+template <class Value_t ,class ... Args>
+inline void construct ( Value_t *ptr, Args && ... args)
+{   (::new (static_cast<void*> (ptr)) Value_t (std::forward<Args> ( args)...));
 };
 
 //
 //-----------------------------------------------------------------------------
 //  function : init_move
 /// @brief Move objets
-/// @tparam iter_t : iterator to the elements
+/// @tparam Iter_t : iterator to the elements
 /// @tparam value_t : class of the object to create
 /// @param [in] itdest : iterator to the final place of the objects
 /// @param [in] R : range to move
 //-----------------------------------------------------------------------------
-template <class iter1_t , class iter2_t >
-inline iter2_t init_move ( iter2_t  it_dest,
-                           iter1_t  first,
-                           const iter1_t   last)
+template <class Iter1_t , class Iter2_t >
+inline Iter2_t init_move ( Iter2_t  it_dest, Iter1_t first,  Iter1_t last)
 {   //----------------- begin ---------------------------
     while ( first != last )   *(it_dest++) = std::move (*(first++));
     return it_dest ;
@@ -107,64 +106,57 @@ inline iter2_t init_move ( iter2_t  it_dest,
 //-----------------------------------------------------------------------------
 //  function : uninit_move
 /// @brief Move objets to uninitialized memory
-/// @tparam iter_t : iterator to the elements
+/// @tparam Iter_t : iterator to the elements
 /// @tparam value_t : class of the object to construct
-/// @param [in] Ptr : pointer to the memory where to create the object
+/// @param [in] ptr : pointer to the memory where to create the object
 /// @param [in] R : range to move
 //-----------------------------------------------------------------------------
-template < class iter_t ,
-           class value_t = typename iterator_traits<iter_t>::value_type >
-inline value_t * uninit_move ( value_t *  Ptr,
-                               iter_t  first,
-                               iter_t  last      )
+template < class Iter_t ,
+           class Value_t = typename iterator_traits<Iter_t>::value_type >
+inline Value_t * uninit_move ( Value_t * ptr, Iter_t  first,Iter_t  last  )
 {   //----------------- begin ---------------------------
-    typedef typename iterator_traits<iter_t>::value_type value2_t ;
-    static_assert ( std::is_same<value_t, value2_t>::value,
+    typedef typename iterator_traits<Iter_t>::value_type value2_t ;
+    static_assert ( std::is_same<Value_t, value2_t>::value,
                    "Incompatible iterators\n");
     //--------------------- code -------------------------------------------
     while ( first != last )
-        ::new (static_cast<void*> (Ptr++)) value_t (std::move ( *(first++)) );
-    return Ptr ;
+        ::new (static_cast<void*> (ptr++)) Value_t (std::move ( *(first++)) );
+    return ptr ;
 };
 //
 //-----------------------------------------------------------------------------
 //  function : destroy
 /// @brief Move objets to uninitialized memory
-/// @tparam iter_t : iterator to the elements
+/// @tparam Iter_t : iterator to the elements
 /// @tparam value_t : class of the object to construct
-/// @param [in] Ptr : pointer to the memory where to construct the object
+/// @param [in] ptr : pointer to the memory where to construct the object
 /// @param [in] R : range to move
 //-----------------------------------------------------------------------------
-template <class iter_t >
-inline void destroy ( iter_t   first, const iter_t  last )
+template <class Iter_t >
+inline void destroy ( Iter_t   first, const Iter_t  last )
 {   //----------------- begin ---------------------------
-    typedef typename iterator_traits<iter_t>::value_type value_t ;
-
+    typedef typename iterator_traits<Iter_t>::value_type value_t ;
     while (first != last) (&(*(first++)))->~value_t () ;
 };
 //
 //-----------------------------------------------------------------------------
 //  function : full_merge
-/// @brief Merge two contiguous buffers pointed by first1 and first2 , and put
-///        in the buffer pointed by P
-/// @tparam iter1_t : iterator to the input buffers
-/// @tparam iter2_t : iterator to the output buffers
-/// @tparam compare : object to compate the elements pointed by iter1_t
+/// @brief Merge two contiguous buffers pointed by buf1 and buf2 , and put
+///        in the buffer pointed by buf_out
 /// @param [in] buf1 : iterator to the first element in the first buffer
+/// @param [in] end_buf1 : final iterator of first buffer
 /// @param [in] buf2 : iterator to the first iterator to the second buffer
 /// @param [in] end_buf2 : final iterator of the second buffer
 /// @param [in] buf_out : buffer where move the elements merged
 /// @param [in] comp : comparison object
 //-----------------------------------------------------------------------------
-template <class iter1_t, class iter2_t, class compare >
-inline iter2_t full_merge ( iter1_t  buf1,
-                            const iter1_t  end_buf1,
-                            iter1_t  buf2,
-                            const iter1_t  end_buf2,
-                            iter2_t  buf_out, compare  comp )
+template <class Iter1_t, class Iter2_t, class Compare >
+inline Iter2_t full_merge ( Iter1_t  buf1, const Iter1_t  end_buf1,
+                            Iter1_t  buf2, const Iter1_t  end_buf2,
+                            Iter2_t  buf_out, Compare  comp )
 {   //------------------- metaprogramming ------------------------------------
-    typedef typename iterator_traits<iter1_t>::value_type value1_t ;
-    typedef typename iterator_traits<iter2_t>::value_type value2_t ;
+    typedef typename iterator_traits<Iter1_t>::value_type value1_t ;
+    typedef typename iterator_traits<Iter2_t>::value_type value2_t ;
     static_assert ( std::is_same<value1_t, value2_t>::value,
                    "Incompatible iterators\n");
     //--------------------- code -------------------------------------------
@@ -179,25 +171,21 @@ inline iter2_t full_merge ( iter1_t  buf1,
 //-----------------------------------------------------------------------------
 //  function : uninit_full_merge
 /// @brief Merge two contiguous buffers pointed by first1 and first2 , and put
-///        in the buffer pointed by P
-/// @tparam iter1_t : iterator to the input buffers
-/// @tparam iter2_t : iterator to the output buffers
-/// @tparam compare : object to compate the elements pointed by iter1_t
-/// @param [in] buf1 : iterator to the first element in the first buffer
-/// @param [in] buf2 : iterator to the first iterator to the second buffer
-/// @param [in] end_buf2 : final iterator of the second buffer
-/// @param [in] buf_out : buffer where move the elements merged
+///        in the uninitialized buffer pointed by it_out
+/// @param [in] first1 : iterator to the first element in the first buffer
+/// @param [in] last : last iterator of the first buffer
+/// @param [in] first2 : iterator to the first element to the second buffer
+/// @param [in] last22 : final iterator of the second buffer
+/// @param [in] it_out : uninitialized buffer where move the elements merged
 /// @param [in] comp : comparison object
 //-----------------------------------------------------------------------------
-template <class iter_t, class value_t, class compare >
-inline value_t* uninit_full_merge ( iter_t  first1,
-                                    const iter_t   last1 ,
-                                    iter_t  first2 ,
-                                    const iter_t  last2 ,
-                                    value_t*   it_out, compare comp )
+template <class Iter_t, class Value_t, class Compare >
+inline Value_t* uninit_full_merge ( Iter_t  first1, const Iter_t  last1 ,
+                                    Iter_t  first2, const Iter_t  last2 ,
+                                    Value_t*   it_out, Compare comp )
 {   //------------------------- metaprogramming -------------------------------
-	typedef typename iterator_traits<iter_t>::value_type type1 ;
-    static_assert ( std::is_same<value_t, type1>::value,
+	typedef typename iterator_traits<Iter_t>::value_type type1 ;
+    static_assert ( std::is_same<Value_t, type1>::value,
                    "Incompatible iterators\n");
     //--------------------- code -------------------------------------------
     while ( first1 != last1 and first2 != last2 )
@@ -210,31 +198,26 @@ inline value_t* uninit_full_merge ( iter_t  first1,
 //
 //---------------------------------------------------------------------------
 //  function : half_merge
-/// @brief : Merge two buffers. The first buffer is in a separate memory
-/// @tparam iter1_t : iterator to the first buffer
-/// @tparam iter2_t : iterator to the second buffer and the output buffer
-/// @tparam compare : object to compate the elements pointed by the iterators
+/// @brief : Merge two buffers. The first buffer is in a separate memory. 
+///          The second buffer have a empty space before buf2 of the same size 
+///          than the (end_buf1 - buf1)
 /// @param [in] buf1 : iterator to the first element of the first buffer
 /// @param [in] end_buf1 : iterator to the last element of the first buffer
 /// @param [in] buf2 : iterator to the first element of the second buffer
 /// @param [in] end_buf2 : iterator to the last element of the second buffer
 /// @param [in] buf_out : iterator to the first element to the buffer where put
 ///                       the result
-/// @param [in] comp : object for compare two elements of the type pointed
-///                    by the iter1_t and iter2_t
-/// @exception
-/// @return
-/// @remarks
+/// @param [in] comp : object for Compare two elements of the type pointed
+///                    by the Iter1_t and Iter2_t
+/// @remarks The elements pointed by Iter1_t and Iter2_t must be the same
 //---------------------------------------------------------------------------
-template <class iter1_t, class iter2_t, class compare >
-inline iter2_t half_merge ( iter1_t  buf1   ,
-                            const iter1_t  end_buf1 ,
-                            iter2_t  buf2   ,
-                            const iter2_t  end_buf2 ,
-                            iter2_t  buf_out, compare  comp     )
+template <class Iter1_t, class Iter2_t, class Compare >
+inline Iter2_t half_merge ( Iter1_t  buf1 , const Iter1_t  end_buf1 ,
+                            Iter2_t  buf2 , const Iter2_t  end_buf2 ,
+                            Iter2_t  buf_out, Compare  comp     )
 {   //---------------------------- begin ------------------------------------
-    typedef typename iterator_traits<iter1_t>::value_type value1_t ;
-    typedef typename iterator_traits<iter2_t>::value_type value2_t ;
+    typedef typename iterator_traits<Iter1_t>::value_type value1_t ;
+    typedef typename iterator_traits<Iter2_t>::value_type value2_t ;
     static_assert ( std::is_same<value1_t, value2_t>::value,
                    "Incompatible iterators\n");
     //--------------------- code -------------------------------------------
@@ -247,28 +230,27 @@ inline iter2_t half_merge ( iter1_t  buf1   ,
 //
 //-----------------------------------------------------------------------------
 //  function : in_place_merge_uncontiguous
-/// @brief : merge two contiguous buffers
-/// @tparam iter_t : iterator to the elements
-/// @tparam compare : object for to compare two elements pointed by iter_t
-///                   iterators
-/// @param [in] first : iterator to the first element
-/// @param [in] last : iterator to the element after the last in the range
-/// @param [in] comp : object for to compare elements
+/// @brief : merge two uncontiguous buffers, placing the results in the buffers
+///          for to do this use an auxiliary buffer pointed by aux
+/// @param [in] src1 : iterator to the first element of the first buffer
+/// @param [in] end_src1 : last iterator  of the first buffer
+/// @param [in] src2 : iterator to the first element of the second buffer
+/// @param [in] end_src2 : last iterator  of the second buffer
+/// @param [in] aux  : iterator to the first element of the auxiliary buffer
+/// @param [in] comp : object for to Compare elements
 /// @exception
 /// @return true : not changes done
 ///         false : changes in the buffers
 /// @remarks
 //-----------------------------------------------------------------------------
-template <class iter1_t  , class iter2_t , class iter3_t, class compare >
-bool in_place_merge_uncontiguous ( iter1_t  src1,
-                                   const iter1_t  end_src1 ,
-                                   iter2_t  src2,
-                                   const iter2_t  end_src2 ,
-                                   iter3_t  aux , compare comp )
+template <class Iter1_t  , class Iter2_t , class Iter3_t, class Compare >
+bool in_place_merge_uncontiguous ( Iter1_t  src1, const Iter1_t  end_src1 ,
+                                   Iter2_t  src2, const Iter2_t  end_src2 ,
+                                   Iter3_t  aux , Compare comp )
 {	//------------------- metaprogramming ------------------------------------
-	typedef typename iterator_traits<iter1_t>::value_type type1 ;
-	typedef typename iterator_traits<iter2_t>::value_type type2 ;
-	typedef typename iterator_traits<iter3_t>::value_type type3 ;
+	typedef typename iterator_traits<Iter1_t>::value_type type1 ;
+	typedef typename iterator_traits<Iter2_t>::value_type type2 ;
+	typedef typename iterator_traits<Iter3_t>::value_type type3 ;
 
     static_assert ( std::is_same<type1, type2>::value,
                    "Incompatible iterators\n");
@@ -280,8 +262,8 @@ bool in_place_merge_uncontiguous ( iter1_t  src1,
 
     while ( src1 != end_src1 and not comp ( *src2, *src1)) ++src1;
 
-	iter3_t const  end_aux = aux + ( end_src1 - src1) ;
-	iter2_t  src2_first = src2 ;
+	Iter3_t const  end_aux = aux + ( end_src1 - src1) ;
+	Iter2_t  src2_first = src2 ;
     init_move (aux , src1 , end_src1);
 
 	while ( ( src1 != end_src1) and (src2 != end_src2))
@@ -300,27 +282,26 @@ bool in_place_merge_uncontiguous ( iter1_t  src1,
 //
 //-----------------------------------------------------------------------------
 //  function : in_place_merge
-/// @brief : merge two contiguous buffers
-/// @tparam iter_t : iterator to the elements
-/// @tparam compare : object for to compare two elements pointed by iter_t
-///                   iterators
-/// @param [in] first : iterator to the first element
-/// @param [in] last : iterator to the element after the last in the range
-/// @param [in] comp : object for to compare elements
+/// @brief : merge two contiguous buffers,using an auxiliary buffer pointed
+///          by buf
+///
+/// @param [in] src1: iterator to the first position of the first buffer
+/// @param [in] src2: final iterator of the first buffer and first iterator
+///                   of the second buffer
+/// @param [in] end_src2 : final iterator of the second buffer
+/// @param [in] buf  : iterator to buffer used as auxiliary memory
+/// @param [in] comp : object for to Compare elements
 /// @exception
 /// @return true : not changes done
 ///         false : changes in the buffers
 /// @remarks
 //-----------------------------------------------------------------------------
-template <class iter1_t  , class iter2_t , class compare >
-inline bool in_place_merge ( iter1_t   src1,
-                             iter1_t   src2 ,
-                             iter1_t   end_src2,
-                             iter2_t  buf,
-                             compare  comp )
+template <class Iter1_t  , class Iter2_t , class Compare >
+inline bool in_place_merge ( Iter1_t  src1, Iter1_t   src2 ,Iter1_t   end_src2,
+                             Iter2_t  buf,  Compare  comp )
 {   //---------------------------- begin ------------------------------------
-	typedef typename iterator_traits<iter1_t>::value_type 	type1 ;
-    typedef typename iterator_traits<iter2_t>::value_type 	type2 ;
+	typedef typename iterator_traits<Iter1_t>::value_type 	type1 ;
+    typedef typename iterator_traits<Iter2_t>::value_type 	type2 ;
 
     static_assert ( std::is_same<type1, type2>::value,
                    "Incompatible iterators\n");
@@ -328,19 +309,20 @@ inline bool in_place_merge ( iter1_t   src1,
     if ( src1 == src2 or src2 == end_src2 or
     	not comp (*src2 , * ( src2 -1)))	return true;
 
-	iter1_t end_src1 = src2 ;
+	Iter1_t end_src1 = src2 ;
 	while ( src1 != end_src1 and not comp ( *src2, *src1)) ++src1 ;
 
 	if ( src1 == end_src1 ) return false ;
 
-	size_t Nx  = end_src1 - src1 ;
+	size_t nx  = end_src1 - src1 ;
 	init_move (buf ,src1, end_src1 ) ;
-	half_merge ( buf , buf + Nx , src2, end_src2 ,src1,comp);
+	half_merge ( buf , buf + nx , src2, end_src2 ,src1,comp);
 	return false ;
 };
 //****************************************************************************
-};//    End namespace lwl
+//};//    End namespace lwl
 };//    End namespace util
+};//    End namespave detail
 };//    End namespace parallel
 };//    End namespace sort
 };//    End namespace boost

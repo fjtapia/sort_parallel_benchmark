@@ -40,16 +40,14 @@
 #define NELEM 100000000
 #define NMAXSTRING 10000000
 using namespace std ;
-namespace bsp_util = boost::sort::parallel::util ;
-namespace bs_tools = boost::sort::parallel::tools;
+namespace bsp_util = boost::sort::parallel::detail::util ;
 namespace bsort    = boost::sort::parallel ;
 
-using bs_tools::time_point ;
-using bs_tools::now;
-using bs_tools::subtract_time ;
-using bs_tools::fill_vector_uint64;
-using bs_tools::write_file_uint64;
-using bs_tools::NThread ;
+using bsp_util::time_point ;
+using bsp_util::now;
+using bsp_util::subtract_time ;
+using bsp_util::fill_vector_uint64;
+using bsp_util::write_file_uint64;
 
 void Generator_sorted(void );
 void Generator_uint64(void );
@@ -59,13 +57,14 @@ template <class IA>
 void Generator (uint64_t N );
 
 template <class IA, class compare  >
-int Prueba  ( std::vector <IA> & B , compare comp = compare() );
+int Test  ( std::vector <IA> & B , compare comp = compare() );
 
 template <class IA>
-int Prueba_spreadsort  ( std::vector <IA> & B );
+int Test_spreadsort  ( std::vector <IA> & B );
 
 int main (int argc, char *argv[] )
 {   //------------------------------ Inicio ----------------------------------
+	cout<<"\n\n";
     cout<<"****************************************************************\n";
     cout<<"**                                                            **\n";
     cout<<"**         B O O S T :: S O R T :: P A R A L L E L            **\n";
@@ -75,7 +74,7 @@ int main (int argc, char *argv[] )
     cout<<"****************************************************************\n";
     cout<<std::endl;
     std::cout.flush();
-    system ( "lscpu");
+    int code = system ( "lscpu");
     std::cout.flush();
     cout<<"\n";
 
@@ -104,7 +103,7 @@ int main (int argc, char *argv[] )
     Generator< int_array<32> >  ( NELEM>>5);
     Generator< int_array<64> >  ( NELEM>>6);
 
-    return 0 ;
+    return code ;
 }
 
 void Generator_sorted(void )
@@ -117,8 +116,8 @@ void Generator_sorted(void )
     A.clear();
     for ( size_t i =0 ; i < NELEM ; ++i)
         A.push_back( i );
-    Prueba<uint64_t, std::less<uint64_t> >(A) ;
-    Prueba_spreadsort( A);
+    Test<uint64_t, std::less<uint64_t> >(A) ;
+    Test_spreadsort( A);
     cout<<std::endl ;
 }
 void Generator_uint64(void )
@@ -132,8 +131,8 @@ void Generator_uint64(void )
     {   std::cout<<"Error in the input file\n";
         return ;
     };
-    Prueba<uint64_t, std::less<uint64_t>>(A) ;
-    Prueba_spreadsort( A);
+    Test<uint64_t, std::less<uint64_t>>(A) ;
+    Test_spreadsort( A);
     cout<<std::endl ;
 }
 void Generator_string(void)
@@ -143,12 +142,12 @@ void Generator_string(void)
     std::vector <std::string> A ;
     A.reserve ( NMAXSTRING);
     A.clear();
-    if ( bs_tools::fill_vector_string("input.bin", A, NMAXSTRING) != 0)
+    if ( bsp_util::fill_vector_string("input.bin", A, NMAXSTRING) != 0)
     {   std::cout<<"Error in the input file\n";
         return ;
     };
-    Prueba<std::string, std::less<std::string> >(A) ;
-    Prueba_spreadsort( A);
+    Test<std::string, std::less<std::string> >(A) ;
+    Test_spreadsort( A);
     cout<<std::endl ;
 };
 
@@ -156,7 +155,7 @@ void Generator_string(void)
 template <class IA>
 void Generator (uint64_t N )
 {   //------------------------------- begin ----------------------------------
-    bs_tools::uint64_file_generator gen ( "input.bin");
+    bsp_util::uint64_file_generator gen ( "input.bin");
     vector<IA> A ;
    	A.reserve ( N);
 
@@ -169,15 +168,15 @@ void Generator (uint64_t N )
         A.emplace_back(IA::generate(gen)) ;
     cout<<"\n  H E A V Y   C O M P A R I S O N\n";
     cout<<"====================================\n";
-    Prueba(A , H_comp< IA >()) ;
+    Test(A , H_comp< IA >()) ;
     cout<<"\n  L I G H T   C O M P A R I S O N \n";
     cout<<"=======================================\n";
-    Prueba(A, L_comp< IA> ()) ;
+    Test(A, L_comp< IA> ()) ;
     cout<<std::endl ;
 };
 
 template <class IA, class compare  >
-int Prueba  ( std::vector <IA> & B , compare comp )
+int Test  ( std::vector <IA> & B , compare comp )
 {   //---------------------------- begin --------------------------------
 	double duracion ;
 	time_point start, finish;
@@ -249,9 +248,9 @@ int Prueba  ( std::vector <IA> & B , compare comp )
     cout<<duracion<<" secs\n";
 
     A = B ;
-    cout<<"Boost parallel stable sort   : ";
+    cout<<"TBB parallel stable sort     : ";
     start= now() ;
-    bsort::parallel_stable_sort (A.begin() , A.end() ,comp );
+    bsort::parallel_stable_sort (A.begin() , A.end(),comp );
     finish = now() ;
     duracion = subtract_time(finish ,start) ;
     cout<<duracion<<" secs\n";
@@ -265,9 +264,9 @@ int Prueba  ( std::vector <IA> & B , compare comp )
     cout<<duracion<<" secs\n";
 
     A = B ;
-    cout<<"TBB parallel stable sort     : ";
+    cout<<"Boost parallel stable sort   : ";
     start= now() ;
-    bsort::parallel_stable_sort (A.begin() , A.end(),comp );
+    bsort::parallel_stable_sort (A.begin() , A.end() ,comp );
     finish = now() ;
     duracion = subtract_time(finish ,start) ;
     cout<<duracion<<" secs\n\n";
@@ -276,7 +275,7 @@ int Prueba  ( std::vector <IA> & B , compare comp )
 };
 
 template <class IA>
-int Prueba_spreadsort  ( std::vector <IA> & B )
+int Test_spreadsort  ( std::vector <IA> & B )
 {   //---------------------------- Inicio --------------------------------
 	double duracion ;
 	time_point start, finish;

@@ -10,24 +10,18 @@
 ///
 /// @remarks
 //-----------------------------------------------------------------------------
-#ifndef __BOOST_SORT_PARALLEL_ALGORITHM_INSERTION_SORT_HPP
-#define __BOOST_SORT_PARALLEL_ALGORITHM_INSERTION_SORT_HPP
-
+#ifndef __BOOST_SORT_PARALLEL_DETAIL_INSERTION_SORT_HPP
+#define __BOOST_SORT_PARALLEL_DETAIL_INSERTION_SORT_HPP
 
 #include <iterator>
 #include <functional>
-#include <stdexcept>
-#include <cstdint>
-#include <cassert>
 #include <utility> // std::swap
-
 
 namespace boost		{
 namespace sort		{
 namespace parallel	{
-namespace algorithm	{
+namespace detail	{
 
-using  std::iterator_traits;
 
 //-----------------------------------------------------------------------------
 //  function : insertion_sort
@@ -37,30 +31,26 @@ using  std::iterator_traits;
 /// @param [in] comp : object for to do the comparison between the elements
 /// @remarks This algorithm is O(N²)
 //-----------------------------------------------------------------------------
-template < class iter_t,
-           typename compare
-		            = std::less <typename iterator_traits<iter_t>::value_type >
-         >
-inline void insertion_sort (iter_t first, iter_t last, compare comp=compare())
+template < class Iter_t, typename Compare >
+void insertion_sort (Iter_t first, Iter_t last, Compare comp )
 {   //------------------------- begin ----------------------
-    typedef typename iterator_traits<iter_t>::value_type value_t ;
+    typedef typename std::iterator_traits<Iter_t>::value_type value_t ;
 
     if ( (last-first) < 2 ) return ;
-    for ( iter_t Alfa = first +1 ;Alfa != last ; ++Alfa)
-    {   value_t Aux = std::move ( *Alfa);
-        iter_t Beta  = Alfa ;
+    for ( Iter_t alfa = first +1 ;alfa != last ; ++alfa)
+    {   value_t Aux = std::move ( *alfa);
+        Iter_t beta  = alfa ;
 
-        while( Beta != first and comp ( Aux, *(Beta-1) ) )
-        {   *Beta = std::move ( *(Beta-1));
-            --Beta ;
+        while( beta != first and comp ( Aux, *(beta-1) ) )
+        {   *beta = std::move ( *(beta-1));
+            --beta ;
         };
-        *Beta = std::move ( Aux );
+        *beta = std::move ( Aux );
     };
 };
-
 //
 //****************************************************************************
-};//    End namespace algorithm
+};//    End namespace detail
 };//    End namespace parallel
 };//    End namespace sort
 };//    End namespace boost
