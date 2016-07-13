@@ -14,7 +14,7 @@ The external programs used are :
 
 In this library is included ALL the code needed for to compile and run the benchmark. You don't need load the Boost Sort Parallel Library. It's inside the include folder, with the external code.
 
-For to compile and run the Linux64 GCC and CLANG version , need to have installed the TBB package. ( Probably is in your package repository).
+For to compile and run the Linux64 GCC and CLANG version, need to have installed the TBB package. ( Probably is in your package repository).
 
 You have folders with the different operating system and compiler used.
 

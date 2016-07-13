@@ -16,27 +16,28 @@
 
 #include <chrono>
 
-namespace boost		{
-namespace sort		{
-namespace parallel	{
-namespace detail	{
-namespace util		{
+namespace boost       {
+namespace sort        {
+namespace parallel    {
+namespace detail      {
+namespace util        {
 
-namespace chrn = std::chrono ;
+namespace chrn = std::chrono;
 //
 //***************************************************************************
 //                D E F I N I T I O N S
 //***************************************************************************
-typedef chrn::steady_clock::time_point           time_point ;
-time_point now ();
-double subtract_time  ( const time_point & t1 , const time_point &t2);
+typedef chrn::steady_clock::time_point           time_point;
+
+time_point now ( );
+double subtract_time  ( const time_point & t1, const time_point & t2 );
 //
 //---------------------------------------------------------------------------
 //  function : now
 /// @brief return the time system in a internal format ( steady_clock)
 /// @return time in steady_clock format
 //---------------------------------------------------------------------------
-time_point now () {   return chrn::steady_clock::now(); };
+time_point now ( ) {   return chrn::steady_clock::now( ); };
 //
 //---------------------------------------------------------------------------
 //  function : subtract_time
@@ -45,11 +46,11 @@ time_point now () {   return chrn::steady_clock::now(); };
 /// @param [in] t2 : second time in time_point format
 /// @return time in seconds of the difference of t1 - t2
 //---------------------------------------------------------------------------
-double subtract_time  ( const time_point & t1 , const time_point &t2)
+double subtract_time  ( const time_point & t1, const time_point & t2 )
 {   //------------------------ begin ---------------------------------
     chrn::duration<double> time_span =
-                          chrn::duration_cast<chrn::duration<double> >(t1-t2);
-    return  time_span.count() ;
+                chrn::duration_cast < chrn::duration < double > > ( t1 - t2 );
+    return  time_span.count( );
 };
 
 //***************************************************************************

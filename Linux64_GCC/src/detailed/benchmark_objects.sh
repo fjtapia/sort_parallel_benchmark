@@ -13,14 +13,14 @@ echo "."
 date
 echo "C O M P I L I N G . . . . . . . . . . ."
 echo "."
-g++ ./file_generator.cpp -std=c++11 -march=native -w -fexceptions -O3 -I../../include  -I../include  -s  -o file_generator
-g++ ./parallel_objects.cpp -std=c++11 -march=native -w -fexceptions -fopenmp -O3 -I../../include -I../include  -pthread  -s  -lpthread -ltbb  -o parallel_objects
+g++ ./file_generator.cpp -std=c++11 -march=native -w -fexceptions -O3 -I../../../include    -s  -o file_generator
+g++ ./parallel_objects.cpp -std=c++11 -march=native -w -fexceptions -fopenmp -O3 -I../../../include   -pthread  -s  -lpthread -ltbb  -o parallel_objects
 date
 echo "R U N N I N G . . . . . . . . . . ."
 echo " ( The time needed is around 20 minutes depending of your machine ). . . . . . ."
 ./file_generator input.bin 100000000
 echo "."
-echo "The results will be stored in the file Results_Numbers.txt"
+echo "The results will be stored in the file Results_Objects.txt"
 echo "."
 echo " please, be patient .........."
 echo "."

@@ -17,7 +17,7 @@ echo .
 echo please, be patient ..........
 echo .
 file_generator input.bin 100000000
-fast_benchmark >Results.txt
+benchmark >Results.txt
 del input.bin
 echo .
 echo E N D

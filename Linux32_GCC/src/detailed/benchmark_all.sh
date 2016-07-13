@@ -1,0 +1,20 @@
+echo "==================================================================" 
+echo "==              B E N C H M A R K   D E T A I L E D             ==" 
+echo "==                                                              ==" 
+echo "==                 G C C      C O M P I L E R                   ==" 
+echo "==                                                              ==" 
+echo "==          B O O S T :: S O R T :: P A R A L L E L             ==" 
+echo "==                                                              ==" 
+echo "==                  A L G O R I T H M S                         ==" 
+echo "==                                                              =="
+echo "=================================================================="
+echo "."
+echo "This benchmark need many time ( aroung 1 hout, depending of your machin)"
+echo "."
+echo " Running benchmark_numbers.sh ......."
+./benchmark_numbers.sh
+echo " Running benchmark_objects.sh ......."
+./benchmark_objects.sh
+echo " Running benchmark_strings.sh ......."
+./benchmark_strings.sh
+echo "END"
