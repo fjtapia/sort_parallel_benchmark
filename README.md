@@ -22,7 +22,7 @@ Inside the Linux64_GCC and Linux64_CLANG folders, you can find the source code a
 
 The program generate a file of 800 M (input.bin) with the random information used in the benchmark. When finish, this file is deleted
 
-The Linux64_CLANG don't use the GCC Parallel sort and GCC Parallel Stable sort  due to the problems with the OpenMP of the version used (4.7).The version 4.8 in some Linux distributions, have a bug, which impede the compilation with the C++11 features.
+The Linux64_CLANG use the version 3.8, because the previous versions have problems with the OpenMP.
 
 In the Windows64 you can find the source code of the benchmark and a version compiled with the Visual Studio 2015.
 
