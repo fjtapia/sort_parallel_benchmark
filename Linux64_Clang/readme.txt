@@ -1,9 +1,8 @@
 README.TXT
 ==============
- I M P O R T A N T  ! ! !
-
-The version 3.8 on Linux have a problem with the C++11 support, and don't compile the program.
-The previous version run well.
+ 
+The version used for to generate the code and compile it is 3.8
+The previous version don't run well because have problems with the OpenMP support
 
 For to compile  and run the programs execute the shell script 
 compile_and_run.sh
