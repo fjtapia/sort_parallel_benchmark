@@ -28,7 +28,5 @@ In the Windows64 you can find the source code of the benchmark and a version com
 
 The execution of the benchmark generate an output file, beginning with the description of the machine (number of threads, memory, cache .... ), and a description of each test and the results obtained
 
-Inside the folders. you can find, too, a sub folder results, with the results files obtained in several machines
-
 ***
 *Copyright 2016  [Francisco Tapia (fjtapia@gmail.com) ] (mail:fjtapia@gmail.com)*
