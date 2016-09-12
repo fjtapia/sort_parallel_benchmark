@@ -14,6 +14,7 @@
 #define __BOOST_SORT_PARALLEL_DETAIL_BLOCK_INDIRECT_SORT_HPP
 
 #include <atomic>
+#include <boost/sort/parallel/detail/constants.hpp>
 #include <boost/sort/parallel/detail/bis/merge_blocks.hpp>
 #include <boost/sort/parallel/detail/bis/move_blocks.hpp>
 #include <boost/sort/parallel/detail/bis/parallel_sort.hpp>
@@ -166,11 +167,11 @@ template < uint32_t Block_size, uint32_t Group_size, class Iter_t,
            class Compare >
 block_indirect_sort< Block_size, Group_size, Iter_t,
                      Compare >::block_indirect_sort( Iter_t first, Iter_t last,
-                                                     Compare cmp,
-                                                     uint32_t nthr )
+                                                     Compare cmp, uint32_t nthr)
     : bk( first, last, cmp ), counter( 0 ), ptr( nullptr ), construct( false ),
       nthread( nthr )
-{ //-------------------------- begin -------------------------------------
+{
+	//-------------------------- begin -------------------------------------
     try
     {
         assert( ( last - first ) >= 0 );
@@ -186,6 +187,8 @@ block_indirect_sort< Block_size, Group_size, Iter_t,
         if ( sorted ) return;
 
         //---------------- check if only single thread -----------------------
+        size_t nthreadmax = nelem / (Block_size *Group_size) +1;
+        if ( nthread > nthreadmax) nthread = ( uint32_t) nthreadmax;
         uint32_t nbits_size = ( util::nbits64( sizeof( value_t ) ) ) >> 1;
         if ( nbits_size > 5 ) nbits_size = 5;
         size_t max_per_thread = 1 << ( 18 - nbits_size );
@@ -221,9 +224,9 @@ block_indirect_sort< Block_size, Group_size, Iter_t,
         };
         bk.works.emplace_back( f1 );
 
-        //------------------------------------------------------------------------
+        //---------------------------------------------------------------------
         //                    PROCESS
-        //------------------------------------------------------------------------
+        //---------------------------------------------------------------------
         std::vector< std::future< void > > vfuture( nthread );
 
         // The function launched with the futures is "execute the functions of
@@ -260,7 +263,8 @@ void block_indirect_sort< Block_size, Group_size, Iter_t,
                           Compare >::split_range( size_t pos_index1,
                                                   size_t pos_index2,
                                                   uint32_t level_thread )
-{ //----------------------------- begin -----------------------------------
+{
+	//----------------------------- begin -----------------------------------
     size_t nblock = pos_index2 - pos_index1;
 
     //-------------------------------------------------------------------------
@@ -315,8 +319,9 @@ template < uint32_t Block_size, uint32_t Group_size, class Iter_t,
            class Compare >
 void block_indirect_sort< Block_size, Group_size, Iter_t,
                           Compare >::start_function( void )
-{ //----------------------- begin -----------------------------------
-    if ( nthread < 9 ) {
+{
+	//----------------------- begin -----------------------------------
+    if ( nthread < BOOST_NTHREAD_BORDER ) {
         parallel_sort_t( bk, bk.global_range.first, bk.global_range.last );
     }
     else
