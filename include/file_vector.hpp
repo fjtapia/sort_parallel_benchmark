@@ -157,6 +157,7 @@ int fill_vector_string ( const std::string & filename,
     {   if  ( ! input.eof( ) )
         {   input >> inval;
             V.push_back ( inval );
+            inval.clear ( ) ;
         }
         else
         {   throw std::ios_base::failure ( "Insuficient lenght of the file\n" );
