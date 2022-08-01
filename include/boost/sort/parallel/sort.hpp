@@ -13,10 +13,12 @@
 #ifndef __BOOST_SORT_PARALLEL_SORT_HPP
 #define __BOOST_SORT_PARALLEL_SORT_HPP
 
+#include <ciso646>
+#include <iterator>
 #include <boost/sort/parallel/detail/select_block_indirect.hpp>
 #include <boost/sort/parallel/detail/parallel_stable_sort.hpp>
 #include <boost/sort/parallel/detail/util/compare_traits.hpp>
-#include <iterator>
+
 
 namespace boost
 {

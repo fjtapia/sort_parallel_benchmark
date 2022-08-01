@@ -15,6 +15,7 @@
 #ifndef __INT_ARRAY_HPP
 #define __INT_ARRAY_HPP
 
+#include <ciso646>
 #include <cstdint>
 #include <iostream>
 

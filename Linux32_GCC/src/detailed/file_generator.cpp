@@ -11,6 +11,7 @@
 ///
 /// @remarks
 //-----------------------------------------------------------------------------
+#include <ciso646>
 #include <file_vector.hpp>
 #include <iostream>
 #include <stdio.h>
